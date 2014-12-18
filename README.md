@@ -1,4 +1,4 @@
-# Assembly array :computer:
+# Assembly matriz :computer:
 
 Exercícios de prática na disciplina Arquitetura de computadores :goberserk: 
 _Código usando somente instruções **básicas** do Assembly mips_
