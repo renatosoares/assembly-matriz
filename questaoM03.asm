@@ -48,10 +48,10 @@ lw		$s1, 0($t1)	# carregue a quantidade de elementos da matriz
 	#loop que insere valores na memória --------------------------------------------
 	loopAdd:
 	#trecho que pega dados do usuário
-		addi	$v0, $zero, 5
-		syscall
-		add	$s2, $zero, $v0
-		#addi $s2, $s2, 0 	#comando temporário
+		#addi	$v0, $zero, 5
+		#syscall
+		#add	$s2, $zero, $v0
+		addi $s2, $s2, 0 	#comando temporário
 
 		sw		$s2, 0($s0)
 		addi	$s0, $s0, 4
@@ -65,12 +65,12 @@ lui	$at, 0x1001
 add	$a0, $zero, $at
 
 lw	$a1, 0($t1)	# valor a ser decrementado - tamanho da matriz
-loopInicio:
+loopInicioLinha:
 lw	$a2, 0($t0)	# valor a ser decrementado - colunas
 
 add	$s3, $zero, $zero
 ######### loop da soma
-loopSoma:
+loopProcuraNuloLinha:
 		lw		$s2, 0($a0)
 		addi	$a0, $a0, 4
 
@@ -82,20 +82,59 @@ loopSoma:
 		
 		continuaFluxo:
 		addi	$a2, $a2, -1
-		bgtz	$a2, loopSoma	# Se maior que zero vá para repetição
+		bgtz	$a2, loopProcuraNuloLinha	# Se maior que zero vá para repetição
 		
 		bne		$s3, $zero, continuaFluxo2 #	if (cont == 0)		qtd_lin++;
 		addi	$s4, $s4, 1			# armazena a quantidade de linhas nulas
 		
 		continuaFluxo2:
 		addi	$a1, $a1, -3
-		bgtz	$a1,  loopInicio		
+		bgtz	$a1,  loopInicioLinha		
+#-------------------------------------------------------------
+###################================================================================
+# reinicia a posição da memória - MATRIZ[0][0] - busca COLUNAS NULAS
+lui	$at, 0x1001
+add	$a0, $zero, $at
+
+lw	$a1, 0($t1)	# valor a ser decrementado - tamanho da matriz
+loopInicioColuna:
+lw	$a2, 0($s5)	# valor a ser decrementado - colunas
+
+add	$s3, $zero, $zero
+######### loop da soma
+loopProcuraNuloColuna:
+		lw		$s2, 0($a0)
+		addi	$a0, $a0, 12
+
+		# condição
+		beq		$zero, $s2, continuaFluxoC	#	if (a[i][j] != 0) 	cont++;
+      	addi	$s3, $s3, 1					
 		
+		#------------------------------------------------
+		
+		continuaFluxoC:
+		addi	$a2, $a2, -1
+		bgtz	$a2, loopProcuraNuloColuna	# Se maior que zero vá para repetição
+		
+		bne		$s3, $zero, continuaFluxo2C #	if (cont == 0)		qtd_col++;
+		addi	$s6, $s6, 1			# armazena a quantidade de linhas nulas
+		
+		continuaFluxo2C:
+		addi	$a1, $a1, -15
+		bgtz	$a1,  loopInicioColuna		
+#-------------------------------------------------------------
+		
+						
 #---------------------------------------------------impressão
+	## Linhas nulas
 	add		$a0, $zero, $s4 
 	addi	$v0, $zero, 1
 	syscall
-		
+
+	##Colunas nulas
+	add		$a0, $zero, $s6
+	addi	$v0, $zero, 1
+	syscall		
 		
 fim:
 	addi	$v0, $zero, 10
